@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import datetime
 
 items = []
 
@@ -6,12 +7,14 @@ items = []
 @dataclass
 class Todo:
     title: str
+    date: datetime.datetime
     isCompleted: bool = False
 
 
-def add(title):
+def add(title, date):
     title = title.replace('b', 'bbb').replace('B', 'Bbb')
-    items.append(Todo(title))
+    parsed_date = datetime.datetime.strptime(date, '%Y-%m-%d')
+    items.append(Todo(title, parsed_date))
 
 
 def get_all():
