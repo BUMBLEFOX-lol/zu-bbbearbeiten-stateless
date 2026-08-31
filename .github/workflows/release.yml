@@ -1,0 +1,41 @@
+name: Release from tag
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Create release
+        uses: ghalactic/github-release-from-tag@v6
+
+  build-exe:
+    needs: release
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build executable
+        uses: sayyid5416/pyinstaller@v1
+        with:
+          python_ver: "3.11"
+          spec: "main.spec"
+          requirements: "requirements.txt"
+
+      - name: Upload executable
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ github.ref_name }} ./dist/main.exe
