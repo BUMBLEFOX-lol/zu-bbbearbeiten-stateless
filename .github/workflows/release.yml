@@ -39,3 +39,34 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release upload ${{ github.ref_name }} ./dist/main.exe
+
+  build-docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set lower case owner name
+        id: lowercase_username
+        run: |
+          echo "actor=${OWNER,,}" >> $GITHUB_OUTPUT
+        env:
+          OWNER: '${{ github.repository_owner }}'
+        shell: bash
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t flask-app .
+          docker tag flask-app ghcr.io/${{ steps.lowercase_username.outputs.actor }}/${{ github.event.repository.name }}/flask-app:latest
+          docker push ghcr.io/${{ steps.lowercase_username.outputs.actor }}/${{ github.event.repository.name }}/flask-app:latest
