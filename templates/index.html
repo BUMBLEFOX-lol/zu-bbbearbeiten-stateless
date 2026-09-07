@@ -1,71 +1,113 @@
 ﻿<!DOCTYPE html>
-<html lang="de">
+<html lang="en" dir="ltr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Todo</title>
-
+    <meta charset="utf-8">
+    <title>Zu Bbbearbeiten</title>
     <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
 </head>
 
 <body>
 
-<div class="ui container" style="margin-top: 3em;">
+    <div style="margin-top: 50px;" class="ui container">
+        <h1 class="ui center aligned header">Zu Bbbearbeiten</h1>
+        <div class="ui divider"></div>
+    </div>
 
-    <h1 class="ui header">Todo</h1>
+    <form name="item" class="ui container form" action="/add" method="post">
 
-    <form class="ui form" action="/add" method="POST" name="item">
-        <div class="field">
-            <input type="text" name="title" placeholder="Todo eingeben">
+        <div class="ui pointing below label" style="margin-top: 0.5em">
+            Was gibbbt es zu tun?
         </div>
 
-        <div class="field">
-            <input type="date" name="date">
+        <input autofocus
+            class="ui fluid input focus"
+            name="text"
+            type="text"
+            id="text"
+            placeholder="Fürs Modul lernen...">
+
+        <div class="ui pointing below label" style="margin-top: 0.5em">
+            Was genau?
         </div>
 
-        <button class="ui blue button" type="submit">
-            Hinzufügen
-        </button>
+        <textarea name="description" id="description" rows="2"></textarea>
+
+        <div class="ui pointing below label" style="margin-top: 0.5em">
+            Zu welcher Kategorie gehört es?
+        </div>
+
+        <select class="ui fluid input" id="category" name="category">
+            <option value="Hausaufgaben">Hausaufgaben</option>
+            <option value="Kunst">Kunst</option>
+            <option value="Hausarbeit">Hausarbeit</option>
+            <option value="Musse">Musse</option>
+        </select>
+
+        <div class="ui pointing below label" style="margin-top: 1em">
+            Wann muss es fertig sein?
+        </div>
+
+        <div class="ui fluid input action">
+            <input type="date" id="deadline" name="deadline">
+            <button class="ui blue button" type="submit">
+                Hinzufügen
+            </button>
+        </div>
+
     </form>
 
-    {% for item in items %}
-    <div class="ui segment" style="overflow:hidden; position: relative">
+    <div class="ui container" style="margin-top: 2em">
 
-        <span class="ui header" style="margin-left: 0.5em;">
-            {{ item.title }}
-        </span>
+        {% for item in items %}
 
-        <span>
-            {{ item.date.strftime('%d.%m.%Y') }}
-        </span>
+        <div class="ui raised segment" style="overflow:hidden; margin-top: 1em">
 
-        {% if item.isCompleted %}
-        <a class="ui green left corner label" href="/update/{{ loop.index0 }}">
-            <i class="check square outline icon"></i>
+            <span class="ui black left label">
+                <i class="calendar icon"></i>
+                {{ item.date.strftime("%d.%m.%Y") }}
+            </span>
+
+            <span class="ui black left label">
+                <i class="folder open icon"></i>
+                {{ item.category }}
+            </span>
+
+            <span class="ui header" style="margin-left: 0.5em;">
+                {{ item.text }}
+            </span>
+
+            <span>
+                {{ item.description }}
+            </span>
+
+            {% if item.isCompleted %}
+
+            <a class="ui green left corner label" href="/update/{{ item.id }}">
+                <i class="check square outline icon"></i>
+            </a>
+
+            {% else %}
+
+            <a class="ui red left corner label" href="/update/{{ item.id }}">
+                <i class="square outline icon"></i>
+            </a>
+
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+        <a href="/getCSV">
+            <button class="ui fluid primary button">
+                <i class="icon download"></i>
+                Download
+            </button>
         </a>
-        {% else %}
-        <a class="ui red left corner label" href="/update/{{ loop.index0 }}">
-            <i class="square outline icon"></i>
-        </a>
-        {% endif %}
 
     </div>
-    {% endfor %}
-
-</div>
-
-<script type="text/javascript">
-
-    $(document).ready(function () {
-        document.item.title.focus();
-    });
-
-</script>
 
 </body>
 
